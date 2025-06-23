@@ -1,5 +1,6 @@
 package praktikum;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -11,6 +12,7 @@ public class IngredientTest {
     private final String name;
     private final float price;
     private final IngredientType type;
+    private Ingredient ingredient;
 
     public IngredientTest(String name, float price, IngredientType type) {
         this.name = name;
@@ -18,7 +20,7 @@ public class IngredientTest {
         this.type = type;
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "Тестовые данные: {0} {1} {2}")
     public static Object[][] getData() {
         return new Object[][]{
                 {"Соус", 50.0f, IngredientType.SAUCE},
@@ -27,29 +29,23 @@ public class IngredientTest {
         };
     }
 
-    @Test
-    public void testCreateIngredientWithCorrectParameters() {
-        Ingredient ingredient = new Ingredient(type, name, price);
-        assertEquals(name, ingredient.getName());
-        assertEquals(price, ingredient.getPrice(), 0.0f);
-        assertEquals(type, ingredient.getType());
+    @Before
+    public void setUp() {
+        ingredient = new Ingredient(type, name, price);
     }
 
     @Test
     public void testReturnCorrectNameFromGetter() {
-        Ingredient ingredient = new Ingredient(type, name, price);
         assertEquals(name, ingredient.getName());
     }
 
     @Test
     public void testReturnCorrectPriceFromGetter() {
-        Ingredient ingredient = new Ingredient(type, name, price);
         assertEquals(price, ingredient.getPrice(), 0.0f);
     }
 
     @Test
     public void testReturnCorrectTypeFromGetter() {
-        Ingredient ingredient = new Ingredient(type, name, price);
         assertEquals(type, ingredient.getType());
     }
 }

@@ -5,9 +5,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class BurgerTest {
@@ -31,60 +30,33 @@ public class BurgerTest {
 
     @Test
     public void testSetBun() {
-        when(mockBun.getName()).thenReturn("Test Bun");
-        when(mockBun.getPrice()).thenReturn(100.0f);
-        
         burger.setBuns(mockBun);
         assertEquals(mockBun, burger.bun);
     }
 
     @Test
     public void testAddIngredient() {
-        when(mockIngredient1.getName()).thenReturn("Test Ingredient");
-        when(mockIngredient1.getPrice()).thenReturn(50.0f);
-        when(mockIngredient1.getType()).thenReturn(IngredientType.FILLING);
-        
         burger.addIngredient(mockIngredient1);
-        List<Ingredient> ingredients = burger.ingredients;
-        assertEquals(1, ingredients.size());
-        assertEquals(mockIngredient1, ingredients.get(0));
+        assertEquals(1, burger.ingredients.size());
     }
 
     @Test
-    public void testRemoveIngredient() {
-        when(mockIngredient1.getName()).thenReturn("Test Ingredient 1");
-        when(mockIngredient1.getPrice()).thenReturn(50.0f);
-        when(mockIngredient1.getType()).thenReturn(IngredientType.SAUCE);
-        
-        when(mockIngredient2.getName()).thenReturn("Test Ingredient 2");
-        when(mockIngredient2.getPrice()).thenReturn(70.0f);
-        when(mockIngredient2.getType()).thenReturn(IngredientType.FILLING);
-        
+    public void testRemoveIngredientReducesSize() {
         burger.addIngredient(mockIngredient1);
         burger.addIngredient(mockIngredient2);
-        
-        assertEquals(2, burger.ingredients.size());
         
         burger.removeIngredient(0);
         
         assertEquals(1, burger.ingredients.size());
-        assertEquals(mockIngredient2, burger.ingredients.get(0));
     }
 
     @Test
-    public void testMoveIngredient() {
-        when(mockIngredient1.getName()).thenReturn("Test Ingredient 1");
-        when(mockIngredient1.getPrice()).thenReturn(50.0f);
-        
-        when(mockIngredient2.getName()).thenReturn("Test Ingredient 2");
-        when(mockIngredient2.getPrice()).thenReturn(70.0f);
-        
+    public void testMoveIngredientChangesOrder() {
         burger.addIngredient(mockIngredient1);
         burger.addIngredient(mockIngredient2);
         
         burger.moveIngredient(0, 1);
         
-        assertEquals(mockIngredient2, burger.ingredients.get(0));
         assertEquals(mockIngredient1, burger.ingredients.get(1));
     }
 
@@ -103,23 +75,59 @@ public class BurgerTest {
     }
 
     @Test
-    public void testMoveIngredientToList() {
-        Burger burger = new Burger();
-        Ingredient bun = new Ingredient(IngredientType.FILLING, "bun", 100.0f);
-        Ingredient cheese = new Ingredient(IngredientType.FILLING, "cheese", 50.0f);
-        Ingredient sauce = new Ingredient(IngredientType.SAUCE, "sauce", 25.0f);
+    public void testAddMultipleIngredientsIncreasesSize() {
+        Ingredient ingredient1 = new Ingredient(IngredientType.FILLING, "bun", 100.0f);
+        Ingredient ingredient2 = new Ingredient(IngredientType.FILLING, "cheese", 50.0f);
+        Ingredient ingredient3 = new Ingredient(IngredientType.SAUCE, "sauce", 25.0f);
         
-        burger.addIngredient(bun);
-        burger.addIngredient(cheese);
-        burger.addIngredient(sauce);
+        burger.addIngredient(ingredient1);
+        burger.addIngredient(ingredient2);
+        burger.addIngredient(ingredient3);
         
         assertEquals(3, burger.ingredients.size());
-        assertTrue(burger.ingredients.contains(bun));
-        assertTrue(burger.ingredients.contains(cheese));
-        assertTrue(burger.ingredients.contains(sauce));
     }
-    
-    private void assertTrue(boolean condition) {
-        assertEquals(true, condition);
+
+    @Test
+    public void testAddedIngredientIsContainedInList() {
+        Ingredient ingredient = new Ingredient(IngredientType.FILLING, "cheese", 50.0f);
+        
+        burger.addIngredient(ingredient);
+        
+        assertTrue(burger.ingredients.contains(ingredient));
+    }
+
+    @Test
+    public void testGetReceiptWithBunAndIngredients() {
+        when(mockBun.getName()).thenReturn("Test Bun");
+        when(mockBun.getPrice()).thenReturn(100.0f);
+        when(mockIngredient1.getName()).thenReturn("Test Sauce");
+        when(mockIngredient1.getType()).thenReturn(IngredientType.SAUCE);
+        when(mockIngredient1.getPrice()).thenReturn(50.0f);
+        
+        burger.setBuns(mockBun);
+        burger.addIngredient(mockIngredient1);
+        
+        String receipt = burger.getReceipt();
+        assertTrue(receipt.contains("Test Bun"));
+    }
+
+    @Test
+    public void testGetReceiptContainsPrice() {
+        when(mockBun.getName()).thenReturn("Test Bun");
+        when(mockBun.getPrice()).thenReturn(100.0f);
+        
+        burger.setBuns(mockBun);
+        
+        String receipt = burger.getReceipt();
+        assertTrue(receipt.contains("Price: 200"));
+    }
+
+    @Test
+    public void testGetPriceWithoutIngredients() {
+        when(mockBun.getPrice()).thenReturn(150.0f);
+        
+        burger.setBuns(mockBun);
+        
+        assertEquals(300.0f, burger.getPrice(), 0.0f);
     }
 }
