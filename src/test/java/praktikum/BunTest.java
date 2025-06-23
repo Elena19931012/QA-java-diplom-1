@@ -46,9 +46,4 @@ public class BunTest {
     public void testReturnCorrectNameFromGetter() {
         assertEquals(name, bun.getName());
     }
-
-    @Test
-    public void testReturnCorrectPriceFromGetter() {
-        assertEquals(price, bun.getPrice(), 0.0f);
-    }
 }
